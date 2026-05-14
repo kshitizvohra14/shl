@@ -2,12 +2,8 @@ fastapi
 uvicorn
 groq
 python-dotenv
-sentence-transformers
-faiss-cpu
 numpy
-beautifulsoup4
-requests
-pydantic
 scikit-learn
-transformers
-torch
+requests
+beautifulsoup4
+pydantic
