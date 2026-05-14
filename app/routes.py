@@ -4,6 +4,11 @@ from app.schemas import ChatRequest
 from app.agent import generate_reply
 
 router = APIRouter()
+@router.get("/")
+def home():
+    return {
+        "message": "SHL Assessment Recommendation API is running"
+    }
 
 
 @router.get("/health")
