@@ -1,27 +1,39 @@
 import json
-import faiss
-import numpy as np
-from sentence_transformers import SentenceTransformer
-
-model = SentenceTransformer("all-MiniLM-L6-v2")
-
-index = faiss.read_index("data/faiss.index")
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 with open("data/shl_catalog.json", "r", encoding="utf-8") as f:
     catalog = json.load(f)
 
+documents = [
+    item["name"] + " " + item["description"]
+    for item in catalog
+]
 
-def search_assessments(query, top_k=10):
-    emb = model.encode([query])
+vectorizer = TfidfVectorizer(
+    stop_words="english"
+)
 
-    distances, indices = index.search(
-        np.array(emb, dtype=np.float32),
-        top_k
-    )
+doc_vectors = vectorizer.fit_transform(
+    documents
+)
+
+
+def search_assessments(query, top_k=5):
+
+    query_vector = vectorizer.transform([query])
+
+    similarities = cosine_similarity(
+        query_vector,
+        doc_vectors
+    ).flatten()
+
+    top_indices = similarities.argsort()[-top_k:][::-1]
 
     results = []
 
-    for idx in indices[0]:
+    for idx in top_indices:
+
         item = catalog[idx]
 
         results.append({
